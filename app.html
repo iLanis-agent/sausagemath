@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SausageMath - Sausage-Making Math That Holds Up</title>
+<meta name="description" content="Cure #1 grams from ppm targets with a hard ceiling, fat-back additions to hit your ratio, salt by block weight, casing footage by type, and honest yield after smoking or dry-curing.">
+<link rel="canonical" href="https://ilanis-agent.github.io/sausagemath/">
+<meta property="og:title" content="SausageMath - Sausage-Making Math That Holds Up">
+<meta property="og:description" content="Cure #1 grams from ppm targets with a hard ceiling, fat-back additions to hit your ratio, salt by block weight, casing footage by type, and honest yield after smoking or dry-curing.">
+<meta property="og:url" content="https://ilanis-agent.github.io/sausagemath/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#33121a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%8C%AD%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#1d1013; --card:#2a161b; --ink:#f7e9e4; --muted:#cda398;
+  --accent:#e06a5a; --accent2:#f2c14e; --line:#4d2a2a; --good:#8fd18a; --warn:#f2c14e; --bad:#e86a5a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:1rem}
+.wrap{max-width:760px;margin:0 auto}
+header{text-align:center;padding:1.6rem 0 1.2rem}
+h1{font-size:2.1rem;color:var(--accent2);letter-spacing:.5px}
+.tag{color:var(--muted);margin-top:.3rem;font-size:.98rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.2rem;margin:1rem 0}
+.card h2{font-size:1.05rem;color:var(--accent);margin-bottom:.7rem}
+.row{display:flex;flex-wrap:wrap;gap:.9rem;align-items:flex-end;margin:.5rem 0}
+.field{display:flex;flex-direction:column;gap:.25rem}
+label{font-size:.8rem;color:var(--muted)}
+input,select{background:#150a0d;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.45rem .6rem;font-size:1rem;width:8.5rem}
+input:focus,select:focus{outline:2px solid var(--accent)}
+button{background:var(--accent);color:#1d1013;border:0;border-radius:8px;padding:.5rem 1.1rem;font-size:.95rem;font-weight:700;cursor:pointer}
+button:hover{background:#ec8878}
+.presets{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 .2rem}
+.presets button{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:400;padding:.35rem .8rem;font-size:.85rem}
+.presets button:hover{border-color:var(--accent);color:var(--ink)}
+.big{font-size:1.3rem;font-weight:700;color:var(--accent2)}
+.result{margin-top:.6rem;font-size:1rem;min-height:1.4rem}
+.result small{color:var(--muted);display:block;margin-top:.25rem}
+.verdict-ok{color:var(--good)} .verdict-tight{color:var(--warn)} .verdict-bad{color:var(--bad)}
+.era{font-size:.85rem;color:var(--muted);margin-bottom:.6rem;font-style:italic}
+footer{margin:2rem 0 1rem;font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem}
+footer code{color:var(--accent)}
+details{margin-top:.4rem} summary{cursor:pointer;color:var(--muted);font-size:.85rem}
+table{border-collapse:collapse;margin-top:.5rem;font-size:.9rem}
+td,th{border:1px solid var(--line);padding:.3rem .6rem;text-align:left}
+th{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>&#127789; SausageMath</h1>
+<p class="tag">Sausage-making math that holds up. Cure weighed to the gram, fat on target, casings counted - and nothing eyeballed that shouldn't be.</p>
+</header>
+
+<section class="card" id="c-cure">
+<h2>Cure #1, weighed not guessed</h2>
+<p class="era">Prague powder #1 is 6.25% sodium nitrite. The target is parts per million of meat, and there is a hard ceiling - this is the one number you never eyeball.</p>
+<div class="row">
+  <div class="field"><label for="in-meat">meat block (lb)</label><input id="in-meat" type="number" min="0.5" max="100" step="0.5" value="5"></div>
+  <div class="field"><label for="in-ppm">target ppm</label>
+    <select id="in-ppm">
+      <option value="0">0 - fresh, no cure</option>
+      <option value="120">120 - bacon-style</option>
+      <option value="156" selected>156 - comminuted sausage max</option>
+    </select>
+  </div>
+  <div class="field"><label for="in-weighed">you weighed (g)</label><input id="in-weighed" type="number" min="0" max="100" step="0.1" placeholder="check"></div>
+</div>
+<button id="btn-cure">Cure math</button>
+<div class="result" id="out-cure"></div>
+</section>
+
+<section class="card" id="c-fat">
+<h2>Fat ratio</h2>
+<p class="era">Venison and chicken breast come to sausage nearly naked. The fat you add back is the juiciness - 20-30% of the finished block.</p>
+<div class="row">
+  <div class="field"><label for="in-lean">lean meat (lb)</label><input id="in-lean" type="number" min="0.5" max="100" step="0.5" value="5"></div>
+  <div class="field"><label for="in-leanfat">its fat (%)</label><input id="in-leanfat" type="number" min="0" max="40" step="1" value="5"></div>
+  <div class="field"><label for="in-target">target fat (%)</label><input id="in-target" type="number" min="10" max="40" step="1" value="25"></div>
+</div>
+<button id="btn-fat">Fat math</button>
+<div class="result" id="out-fat"></div>
+</section>
+
+<section class="card" id="c-salt">
+<h2>Salt &amp; casing</h2>
+<p class="era">Salt runs 1.8-2% of the block and casing footage runs on feet per pound - both scale with the block you actually ground.</p>
+<div class="row">
+  <div class="field"><label for="in-block">block (lb)</label><input id="in-block" type="number" min="0.5" max="120" step="0.1" value="6.3"></div>
+  <div class="field"><label for="in-saltpct">salt (%)</label><input id="in-saltpct" type="number" min="1" max="3" step="0.1" value="1.9"></div>
+  <div class="field"><label for="in-casing">casing</label>
+    <select id="in-casing">
+      <option value="hog" selected>hog - brat diameter</option>
+      <option value="sheep">sheep - breakfast links</option>
+      <option value="collagen">collagen - uniform</option>
+    </select>
+  </div>
+</div>
+<button id="btn-salt">Salt &amp; casing math</button>
+<div class="result" id="out-salt"></div>
+</section>
+
+<section class="card" id="c-yield">
+<h2>Yield honesty</h2>
+<p class="era">The smoker and the drying chamber charge rent in water weight. Plan servings on what comes out, not what went in.</p>
+<div class="row">
+  <div class="field"><label for="in-yblock">block (lb)</label><input id="in-yblock" type="number" min="0.5" max="120" step="0.1" value="6.3"></div>
+  <div class="field"><label for="in-style">finish</label>
+    <select id="in-style">
+      <option value="fresh">fresh - cook within days</option>
+      <option value="smoked" selected>smoked - loses ~12%</option>
+      <option value="drycured">dry-cured - keeps ~65%</option>
+    </select>
+  </div>
+</div>
+<button id="btn-yield">Yield math</button>
+<div class="result" id="out-yield"></div>
+</section>
+
+<section class="card" id="c-why">
+<h2>Why these numbers</h2>
+<details><summary>The assumptions, stated honestly</summary>
+<table>
+<tr><th>Constant</th><th>Value</th><th>Why</th></tr>
+<tr><td>Cure #1</td><td>6.25% sodium nitrite</td><td>The standardized Prague powder #1 blend - ppm math rides on it</td></tr>
+<tr><td>Cure target</td><td>156 ppm max, comminuted</td><td>USDA in-going limit for sausage; 120 ppm is the bacon convention</td></tr>
+<tr><td>Fat target</td><td>20-30% of block</td><td>Below 15% eats dry; above 30% renders out in the smoker</td></tr>
+<tr><td>Salt</td><td>1.8-2% of block</td><td>Flavor and protein extraction - under 1.5% the bind fails</td></tr>
+<tr><td>Casing</td><td>hog ~2, sheep ~3, collagen ~2.2 ft/lb</td><td>Feet of casing per pound of meat by diameter</td></tr>
+<tr><td>Shrink</td><td>smoked 12%, dry-cured 35%</td><td>Water loss is the price of smoke and shelf stability</td></tr>
+</table>
+<p style="margin-top:.5rem;color:var(--muted);font-size:.85rem">Grind temperature and smoker humidity move these numbers. A gram scale is the whole game for cure.</p>
+</details>
+</section>
+
+<footer>
+<p><strong>SausageMath</strong> - part of the App Factory collection. Honest small tools, one good idea at a time.</p>
+<p>Source: <code>engine.js</code> (pure functions, tested) &middot; <code>app.html</code> (this UI) &middot; <code>README.md</code></p>
+</footer>
+</div>
+
+<script src="engine.js"></script>
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function num(id) { return parseFloat($(id).value) || 0; }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+  $('btn-cure').addEventListener('click', function () {
+    var meat = num('in-meat'), ppm = num('in-ppm');
+    var g = SausageMath.cureG(meat, ppm);
+    var weighed = parseFloat($('in-weighed').value);
+    var html;
+    if (ppm === 0) {
+      html = '<span class="verdict-tight">' + esc(SausageMath.cureVerdict(0)) + '</span>';
+    } else {
+      var v = SausageMath.cureVerdict(ppm);
+      html = 'For ' + meat + ' lb at ' + ppm + ' ppm: weigh <span class="big">' + g.toFixed(2) + ' g</span> of cure #1.' +
+        '<br><span class="verdict-ok">' + esc(v) + '</span>';
+      if (weighed > 0) {
+        var actual = SausageMath.ppmCheck(meat, weighed);
+        var av = SausageMath.cureVerdict(actual);
+        var cls = actual > 156 ? 'verdict-bad' : (actual >= 100 ? 'verdict-ok' : 'verdict-tight');
+        html += '<br>Your weighed ' + weighed + ' g is actually <span class="' + cls + '">' + Math.round(actual) + ' ppm</span>: ' + esc(av);
+      }
+    }
+    html += '<small>Dissolve the cure in a little water and mix it in early - even distribution is the safety, not the pink color.</small>';
+    $('out-cure').innerHTML = html;
+  });
+
+  $('btn-fat').addEventListener('click', function () {
+    var lean = num('in-lean'), lf = num('in-leanfat'), tf = num('in-target');
+    var v = SausageMath.fatVerdict(tf);
+    if (tf <= lf) {
+      $('out-fat').innerHTML = 'The meat is already at or above ' + tf + '% fat - grind leaner or lower the target.' +
+        '<br><span class="verdict-tight">' + esc(v) + '</span>';
+      return;
+    }
+    var add = SausageMath.fatAddLb(lean, lf, tf);
+    var block = lean + add;
+    $('out-fat').innerHTML =
+      'Add <span class="big">' + add.toFixed(2) + ' lb</span> of fatback to ' + lean + ' lb of ' + lf + '% meat for a ' +
+      block.toFixed(2) + ' lb block at ' + tf + '%.' +
+      '<br><span class="verdict-tight">' + esc(v) + '</span>' +
+      '<small>Pork fatback is the classic; keep it near-frozen so it grinds instead of smearing.</small>';
+    $('in-block').value = block.toFixed(2);
+    $('in-yblock').value = block.toFixed(2);
+  });
+
+  $('btn-salt').addEventListener('click', function () {
+    var block = num('in-block'), pct = num('in-saltpct'), type = $('in-casing').value;
+    var salt = SausageMath.saltG(block, pct);
+    var ft = SausageMath.casingFt(block, type);
+    var v = SausageMath.casingVerdict(type);
+    $('out-salt').innerHTML =
+      'A ' + block + ' lb block wants <span class="big">' + salt.toFixed(1) + ' g salt</span> (' + pct + '%) and about ' +
+      '<span class="big">' + Math.round(ft) + ' ft</span> of ' + type + ' casing.' +
+      '<br><span class="verdict-tight">' + esc(v) + '</span>' +
+      '<small>Soak natural casings 30 minutes and flush them - and rinse the packing salt off first.</small>';
+  });
+
+  $('btn-yield').addEventListener('click', function () {
+    var block = num('in-yblock'), style = $('in-style').value;
+    var y = SausageMath.yieldLb(block, style);
+    var v = SausageMath.yieldVerdict(style);
+    $('out-yield').innerHTML =
+      'A ' + block + ' lb block finishes as <span class="big">' + y.toFixed(2) + ' lb</span> of ' + style + ' sausage.' +
+      '<br><span class="verdict-ok">' + esc(v) + '</span>' +
+      '<small>Plan servings at a third of a pound each - that is an honest dinner link count.</small>';
+  });
+
+  ['cure','fat','salt','yield'].forEach(function (k) { $('btn-' + k).click(); });
+})();
+</script>
+</body>
+</html>
